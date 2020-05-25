@@ -1,0 +1,45 @@
+exec()
+-> run system commands easily in another process, by getting advantage
+   of shell and buffering all input into memory
+-> not suitable when we expect output to be large, but ok for commands
+   from which we expect none or limited output
+
+spawn()
+-> run system commands for which we expect large output or want
+   to use stream interface or want to make process "detached"
+-> uses stream interface for "stdio", thus also suitable when expecting large
+   output and need to pipe it to another process
+-> for simple scripts "exec" is easier to work with
+-> by default does not run commands within "shell" so we can not pipe
+   directly without using stream interface, but that can be overriden
+-> can also run "detached" process in the background, that will run even
+   when parent is finished
+
+fork()
+-> will create new process from given nodejs script
+-> will introduce messaging interface between parent and children
+-> can be used to create worker pool from processes for CPU intensive tasks,
+   each will have its own V8 (event loop, stack, ...)
+-> "worker_thread" module is better suited for that as threads takes fewer
+   resource and can communicate with each other, not just parent <-> child,
+   and everything runs in single process
+
+execFile()
+→ will execute executable file without using shell
+
+----------------------------------------------------------------------------
+
+-> there are also sync version of all those function which are good for scripting
+   purposes, but do not use those in real server
+
+----------------------------------------------------------------------------
+
+RULE OF THUMB: for number of process or threads
+-> if not necessary do not create more processes/threads than is the number 
+   of logical cores, it would probably just decrease the performance
+
+SIDE NOTES:
+-> each process has at least one thread
+-> threads within same process can share memory, but processes can not
+-> CPU core is running thread not process (as each process
+   has at least one thread)
